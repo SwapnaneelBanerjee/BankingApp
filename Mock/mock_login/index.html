@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDD Bank - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>    
+</head>
+<body>
+
+    <div id="login-page">
+        <div class="login-card">
+            <h2 style="color: var(--primary)">TDD Bank</h2>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">Secure Online Banking</p>
+            <p id="error-msg" class="hidden" style="color: var(--danger); font-size: 0.85rem;">Invalid credentials!</p>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button class="btn btn-primary" onclick="handleLogin()">Secure Login</button>
+        </div>
+    </div>
+
+    <div id="home-page" class="hidden">
+        <nav>
+            <h2 class="logo">TDD Bank</h2>
+            <div>
+                <span style="margin-right: 15px; color: #64748b;">Welcome, <strong>Admin</strong></span>
+                <button class="btn btn-outline" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <div class="balance-card">
+                <p style="opacity: 0.9; margin: 0;">Total Available Balance</p>
+                <h1 class="balance-amount">₹42,450.00</h1>
+                <p style="font-size: 0.85rem; opacity: 0.8;">Account Number: **** *264</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card" onclick="navigateTo('balance')">
+                    <span class="feature-icon">📊</span>
+                    <h3>Check Balance</h3>
+                    <p style="color: #64748b; font-size: 0.9rem;">View detailed account statements</p>
+                </div>
+
+                <div class="feature-card" onclick="navigateTo('transfer')">
+                    <span class="feature-icon">💸</span>
+                    <h3>Transfer Funds</h3>
+                    <p style="color: #64748b; font-size: 0.9rem;">Send money to other accounts</p>
+                </div>
+
+                <div class="feature-card" onclick="navigateTo('bills')">
+                    <span class="feature-icon">📝</span>
+                    <h3>Pay Bills</h3>
+                    <p style="color: #64748b; font-size: 0.9rem;">Utilities, Credit Cards, and more</p>
+                </div>
+
+                <div class="feature-card" onclick="navigateTo('settings')">
+                    <span class="feature-icon">⚙️</span>
+                    <h3>Settings</h3>
+                    <p style="color: #64748b; font-size: 0.9rem;">Manage your security and profile</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="welcome-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h1 style="font-size: 3rem; margin: 0;">🛡️</h1>
+            <h2>Secure Connection Established</h2>
+            <p style="color: #64748b;">Welcome back to your TDD Bank dashboard. Your session is now active.</p>
+            <button class="btn btn-primary" onclick="closeModal()">Enter Dashboard</button>
+        </div>
+    </div>
+</body>
+</html>
