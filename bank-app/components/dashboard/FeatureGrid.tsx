@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import FeatureCard from '../ui/FeatureCard';
 import {
   BarChart3,
@@ -9,6 +10,8 @@ import {
 } from 'lucide-react';
 
 export default function FeatureGrid() {
+  const router = useRouter();
+
   return (
     <section className="mt-10">
       <div
@@ -24,7 +27,7 @@ export default function FeatureGrid() {
           title="Insights"
           description="Analyze your spending and view statements."
           icon={<BarChart3 className="h-6 w-6 text-blue-600" />}
-          onClick={() => alert('Opening Insights')}
+          onClick={() => router.push('/insights')}
         />
 
         <FeatureCard
