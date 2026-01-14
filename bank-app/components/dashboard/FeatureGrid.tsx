@@ -2,6 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import FeatureCard from '../ui/FeatureCard';
+import { useRouter } from 'next/navigation';
+
+
 import {
   BarChart3,
   Send,
@@ -34,7 +37,7 @@ export default function FeatureGrid() {
           title="Move Money"
           description="Instant transfers to saved or new payees."
           icon={<Send className="h-6 w-6 text-green-600" />}
-          onClick={() => alert('Initiating Transfer')}
+          onClick={() => router.push('/transaction')}
         />
 
         <FeatureCard
