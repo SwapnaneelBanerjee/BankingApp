@@ -1,11 +1,12 @@
 // File: app/insights/page.tsx
 
 'use client';
-
+import { useRouter } from 'next/navigation';
+import Navbar from '@/components/ui/Navbar';
+import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import { 
-  TrendingUp, 
-  TrendingDown, 
+  TrendingUp,  
   DollarSign, 
   ShoppingCart, 
   Coffee, 
@@ -19,6 +20,7 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
+import NavbarWrapper from '@/components/wrapper/NavbarWrapper';
 
 interface Transaction {
   id: string;
@@ -37,44 +39,173 @@ interface CategorySpending {
   color: string;
 }
 
+interface TimeRangeData {
+  week: {
+    transactions: Transaction[];
+    categorySpending: CategorySpending[];
+    totalSpent: number;
+    totalIncome: number;
+    monthlyTrend: { label: string; amount: number }[];
+  };
+  month: {
+    transactions: Transaction[];
+    categorySpending: CategorySpending[];
+    totalSpent: number;
+    totalIncome: number;
+    monthlyTrend: { label: string; amount: number }[];
+  };
+  year: {
+    transactions: Transaction[];
+    categorySpending: CategorySpending[];
+    totalSpent: number;
+    totalIncome: number;
+    monthlyTrend: { label: string; amount: number }[];
+  };
+}
+
+// Dummy data generators
+const generateDummyData = (): TimeRangeData => {
+  return {
+    week: {
+      totalSpent: 6500.00,
+      totalIncome: 8000.00,
+      transactions: [
+        { id: '1', category: 'Shopping', amount: 2499, date: '2026-01-13', merchant: 'Amazon', type: 'debit' },
+        { id: '2', category: 'Food', amount: 850, date: '2026-01-12', merchant: 'Swiggy', type: 'debit' },
+        { id: '3', category: 'Bills', amount: 1200, date: '2026-01-11', merchant: 'Electricity Bill', type: 'debit' },
+        { id: '4', category: 'Shopping', amount: 1951, date: '2026-01-10', merchant: 'Flipkart', type: 'debit' },
+      ],
+      categorySpending: [
+        { category: 'Shopping', amount: 4450, percentage: 68.5, icon: ShoppingCart, color: 'bg-purple-500' },
+        { category: 'Food & Dining', amount: 850, percentage: 13.1, icon: Coffee, color: 'bg-orange-500' },
+        { category: 'Bills & Utilities', amount: 1200, percentage: 18.4, icon: Home, color: 'bg-blue-500' },
+      ],
+      monthlyTrend: [
+        { label: 'Mon', amount: 1200 },
+        { label: 'Tue', amount: 2100 },
+        { label: 'Wed', amount: 950 },
+        { label: 'Thu', amount: 1300 },
+        { label: 'Fri', amount: 650 },
+        { label: 'Sat', amount: 300 },
+      ],
+    },
+    month: {
+      totalSpent: 28450.00,
+      totalIncome: 45000.00,
+      transactions: [
+        { id: '1', category: 'Shopping', amount: 2499, date: '2026-01-13', merchant: 'Amazon', type: 'debit' },
+        { id: '2', category: 'Income', amount: 45000, date: '2026-01-10', merchant: 'Salary Deposit', type: 'credit' },
+        { id: '3', category: 'Food', amount: 850, date: '2026-01-12', merchant: 'Swiggy', type: 'debit' },
+        { id: '4', category: 'Bills', amount: 1200, date: '2026-01-11', merchant: 'Electricity Bill', type: 'debit' },
+        { id: '5', category: 'Shopping', amount: 3200, date: '2026-01-09', merchant: 'Flipkart', type: 'debit' },
+      ],
+      categorySpending: [
+        { category: 'Shopping', amount: 8500, percentage: 29.9, icon: ShoppingCart, color: 'bg-purple-500' },
+        { category: 'Food & Dining', amount: 6200, percentage: 21.8, icon: Coffee, color: 'bg-orange-500' },
+        { category: 'Bills & Utilities', amount: 5800, percentage: 20.4, icon: Home, color: 'bg-blue-500' },
+        { category: 'Transportation', amount: 3200, percentage: 11.2, icon: Car, color: 'bg-green-500' },
+        { category: 'Entertainment', amount: 2450, percentage: 8.6, icon: Heart, color: 'bg-pink-500' },
+        { category: 'Technology', amount: 2300, percentage: 8.1, icon: Smartphone, color: 'bg-indigo-500' },
+      ],
+      monthlyTrend: [
+        { label: 'Week 1', amount: 6200 },
+        { label: 'Week 2', amount: 7150 },
+        { label: 'Week 3', amount: 8200 },
+        { label: 'Week 4', amount: 6900 },
+      ],
+    },
+    year: {
+      totalSpent: 325640.00,
+      totalIncome: 520000.00,
+      transactions: [
+        { id: '1', category: 'Shopping', amount: 2499, date: '2026-01-13', merchant: 'Amazon', type: 'debit' },
+        { id: '2', category: 'Income', amount: 45000, date: '2026-01-10', merchant: 'Salary Deposit', type: 'credit' },
+        { id: '3', category: 'Food', amount: 15600, date: '2025-12-28', merchant: 'Various Restaurants', type: 'debit' },
+        { id: '4', category: 'Bills', amount: 68000, date: '2025-12-01', merchant: 'Annual Bills', type: 'debit' },
+        { id: '5', category: 'Travel', amount: 45000, date: '2025-11-15', merchant: 'Flight Booking', type: 'debit' },
+      ],
+      categorySpending: [
+        { category: 'Shopping', amount: 98600, percentage: 30.3, icon: ShoppingCart, color: 'bg-purple-500' },
+        { category: 'Food & Dining', amount: 72400, percentage: 22.2, icon: Coffee, color: 'bg-orange-500' },
+        { category: 'Bills & Utilities', amount: 68500, percentage: 21.0, icon: Home, color: 'bg-blue-500' },
+        { category: 'Transportation', amount: 36200, percentage: 11.1, icon: Car, color: 'bg-green-500' },
+        { category: 'Entertainment', amount: 28500, percentage: 8.7, icon: Heart, color: 'bg-pink-500' },
+        { category: 'Technology', amount: 21440, percentage: 6.6, icon: Smartphone, color: 'bg-indigo-500' },
+      ],
+      monthlyTrend: [
+        { label: 'Jan', amount: 28450 },
+        { label: 'Feb', amount: 32000 },
+        { label: 'Mar', amount: 28000 },
+        { label: 'Apr', amount: 31000 },
+        { label: 'May', amount: 29500 },
+        { label: 'Jun', amount: 32500 },
+        { label: 'Jul', amount: 30200 },
+        { label: 'Aug', amount: 29800 },
+        { label: 'Sep', amount: 28000 },
+        { label: 'Oct', amount: 31000 },
+        { label: 'Nov', amount: 29500 },
+        { label: 'Dec', amount: 32500 },
+      ],
+    },
+  };
+};
+
 export default function InsightsPage() {
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  
+  const dummyData = generateDummyData();
+  const currentData = dummyData[timeRange];
 
-  // Mock data
-  const totalSpent = 28450.00;
-  const totalIncome = 45000.00;
-  const savingsRate = 36.8;
+  // Filter transactions based on selected month/year
+  const filteredTransactions = currentData.transactions.filter((transaction) => {
+    const transactionDate = new Date(transaction.date);
+    
+    if (selectedMonth !== null) {
+      if (transactionDate.getMonth() !== selectedMonth) return false;
+    }
+    
+    if (selectedYear !== null) {
+      if (transactionDate.getFullYear() !== selectedYear) return false;
+    }
+    
+    return true;
+  });
+
+  // Calculate filtered data
+  const getTotalSpent = () => {
+    if (selectedMonth !== null || selectedYear !== null) {
+      return filteredTransactions
+        .filter(t => t.type === 'debit')
+        .reduce((sum, t) => sum + t.amount, 0);
+    }
+    return currentData.totalSpent;
+  };
+
+  const getTotalIncome = () => {
+    if (selectedMonth !== null || selectedYear !== null) {
+      return filteredTransactions
+        .filter(t => t.type === 'credit')
+        .reduce((sum, t) => sum + t.amount, 0);
+    }
+    return currentData.totalIncome;
+  };
+
+  const totalSpent = getTotalSpent();
+  const totalIncome = getTotalIncome();
+  const savingsRate = totalIncome > 0 ? ((totalIncome - totalSpent) / totalIncome * 100).toFixed(1) : '0';
   const comparedToLastMonth = -12.5;
-
-  const categorySpending: CategorySpending[] = [
-    { category: 'Shopping', amount: 8500, percentage: 29.9, icon: ShoppingCart, color: 'bg-purple-500' },
-    { category: 'Food & Dining', amount: 6200, percentage: 21.8, icon: Coffee, color: 'bg-orange-500' },
-    { category: 'Bills & Utilities', amount: 5800, percentage: 20.4, icon: Home, color: 'bg-blue-500' },
-    { category: 'Transportation', amount: 3200, percentage: 11.2, icon: Car, color: 'bg-green-500' },
-    { category: 'Entertainment', amount: 2450, percentage: 8.6, icon: Heart, color: 'bg-pink-500' },
-    { category: 'Technology', amount: 2300, percentage: 8.1, icon: Smartphone, color: 'bg-indigo-500' },
-  ];
-
-  const recentTransactions: Transaction[] = [
-    { id: '1', category: 'Shopping', amount: 2499, date: '2026-01-13', merchant: 'Amazon', type: 'debit' },
-    { id: '2', category: 'Income', amount: 45000, date: '2026-01-10', merchant: 'Salary Deposit', type: 'credit' },
-    { id: '3', category: 'Food', amount: 850, date: '2026-01-12', merchant: 'Swiggy', type: 'debit' },
-    { id: '4', category: 'Bills', amount: 1200, date: '2026-01-11', merchant: 'Electricity Bill', type: 'debit' },
-    { id: '5', category: 'Shopping', amount: 3200, date: '2026-01-09', merchant: 'Flipkart', type: 'debit' },
-  ];
-
-  const monthlyTrend = [
-    { month: 'Aug', amount: 32000 },
-    { month: 'Sep', amount: 28000 },
-    { month: 'Oct', amount: 31000 },
-    { month: 'Nov', amount: 29500 },
-    { month: 'Dec', amount: 32500 },
-    { month: 'Jan', amount: 28450 },
-  ];
+  
+  const categorySpending = currentData.categorySpending;
+  const recentTransactions = filteredTransactions.slice(0, 5);
+  const monthlyTrend = currentData.monthlyTrend;
 
   const maxTrend = Math.max(...monthlyTrend.map(m => m.amount));
 
   return (
+    <main className="bg-slate-50 min-h-screen pb-20">
+      <NavbarWrapper />
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
@@ -97,11 +228,15 @@ export default function InsightsPage() {
           </div>
 
           {/* Time Range Selector */}
-          <div className="flex gap-2 mt-6">
+          <div className="flex gap-2 mt-6 mb-6">
             {(['week', 'month', 'year'] as const).map((range) => (
               <button
                 key={range}
-                onClick={() => setTimeRange(range)}
+                onClick={() => {
+                  setTimeRange(range);
+                  setSelectedMonth(null);
+                  setSelectedYear(null);
+                }}
                 className={`px-4 py-2 rounded-lg font-medium transition ${
                   timeRange === range
                     ? 'bg-blue-600 text-white'
@@ -111,6 +246,42 @@ export default function InsightsPage() {
                 {range.charAt(0).toUpperCase() + range.slice(1)}
               </button>
             ))}
+          </div>
+
+          {/* Filter by Month/Year */}
+          <div className="flex gap-4 items-center">
+            {timeRange !== 'week' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Month:</label>
+                  <select
+                    value={selectedMonth ?? ''}
+                    onChange={(e) => setSelectedMonth(e.target.value ? parseInt(e.target.value) : null)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Months</option>
+                    {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, idx) => (
+                      <option key={idx} value={idx}>
+                        {month}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Year:</label>
+                  <select
+                    value={selectedYear ?? ''}
+                    onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : null)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Years</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                  </select>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -184,7 +355,7 @@ export default function InsightsPage() {
                         style={{ width: `${(item.amount / maxTrend) * 100}%` }}
                       >
                         <span className="text-xs font-semibold text-white">
-                          ₹{(item.amount / 1000).toFixed(1)}k
+                          ₹{(item.amount / 1000).toFixed(1)}
                         </span>
                       </div>
                     </div>
@@ -276,5 +447,6 @@ export default function InsightsPage() {
         </div>
       </div>
     </div>
+    </main>
   );
 }
