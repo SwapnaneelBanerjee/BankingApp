@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import FeatureCard from '../ui/FeatureCard';
 import { useRouter } from 'next/navigation';
 
