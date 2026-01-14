@@ -41,7 +41,7 @@ export default function FeatureGrid() {
           title="Bill Payments"
           description="Pay utilities and credit cards easily."
           icon={<Receipt className="h-6 w-6 text-orange-600" />}
-          onClick={() => alert('Opening Bill Pay')}
+          onClick={() => router.push('/bills')}
         />
 
         <FeatureCard
