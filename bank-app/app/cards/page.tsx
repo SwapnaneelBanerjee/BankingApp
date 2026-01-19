@@ -309,7 +309,7 @@ const App = () => {
                   <div className="w-2 h-6 bg-slate-900 rounded-full"></div>
                   <span className="text-xs font-black text-slate-800 uppercase tracking-widest">TDD Credit Line</span>
                 </div>
-                <span className="text-[10px] font-bold text-slate-400">PRIMARY SLOT</span>
+                <span className="text-[10px] font-bold text-slate-400">PRIMARY SLOT 1</span>
               </div>
               {adding === 'credit' ? (
                 <AddCardForm type="credit" onCancel={() => setAdding(null)} onAdd={(c) => { setCards({...cards, credit: c}); setAdding(null); }} />
